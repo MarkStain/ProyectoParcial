@@ -16,7 +16,7 @@ public class Automata {
     Stack<String> pila = new Stack<>();
     boolean resultado = false;
 
-    public boolean parsear(LinkedList<Simbolo> entrada) {
+    public boolean parsear(LinkedList<Simbolo> entrada) throws Exception {
 
         pila.push("$");
         pila.push("E");
@@ -24,69 +24,71 @@ public class Automata {
 
     }
 
-    private boolean reconocer(LinkedList<Simbolo> entrada) {
-        boolean aceptar = true;
+    private boolean reconocer(LinkedList<Simbolo> entrada) throws Exception {
+        //entrada.stream().forEach(item-> System.out.println(item)
+        System.out.println(pila.peek());
+                
         switch (entrada.getFirst().token) {
             case "|" -> {
                 switch (pila.peek()) {
                     case "E" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "E'" -> {
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
                         pila.push("|");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "T" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T'" -> {
                         pila.pop();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "F" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
-                    case "|"->{
+                    case "|" -> {
                         pila.pop();
                         entrada.removeFirst();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    default ->{
-                        aceptar = false;
-                    }                    
+                    default -> {
+                        throw new Exception("cadena no aceptada");
+                    }
                 }
             }
             case "&" -> {
                 switch (pila.peek()) {
                     case "E" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "E'" -> {
-                       aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T'" -> {
                         pila.pop();
                         pila.push("F");
                         pila.push("&");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "F" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
-                    case "&"->{
+                    case "&" -> {
                         pila.pop();
                         entrada.removeFirst();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    default ->{
-                        aceptar = false;
-                    }                    
+                    default -> {
+                        throw new Exception("cadena no aceptada");
+                    }
                 }
             }
             case "!" -> {
@@ -95,34 +97,34 @@ public class Automata {
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "E'" -> {
-                       aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T" -> {
                         pila.pop();
                         pila.push("T'");
                         pila.push("F");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "T'" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "F" -> {
                         pila.pop();
                         pila.push("F");
                         pila.push("!");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    case "!"->{
+                    case "!" -> {
                         pila.pop();
                         entrada.removeFirst();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    default ->{
-                        aceptar = false;
-                    }                    
+                    default -> {
+                        throw new Exception("cadena no aceptada");
+                    }
                 }
             }
             case "(" -> {
@@ -131,64 +133,64 @@ public class Automata {
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "E'" -> {
-                       aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T" -> {
                         pila.pop();
                         pila.push("T'");
                         pila.push("F");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "T'" -> {
-                         aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "F" -> {
                         pila.pop();
                         pila.push(")");
                         pila.push("E");
                         pila.push("(");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    case "("->{
+                    case "(" -> {
                         pila.pop();
                         entrada.removeFirst();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    default ->{
-                        aceptar = false;
-                    }                    
+                    default -> {
+                        throw new Exception("cadena no aceptada");
+                    }
                 }
             }
             case ")" -> {
                 switch (pila.peek()) {
                     case "E" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "E'" -> {
-                       pila.pop();
-                       aceptar = reconocer(entrada);
+                        pila.pop();
+                        return reconocer(entrada);
                     }
                     case "T" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T'" -> {
                         pila.pop();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "F" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
-                    case ")"->{
+                    case ")" -> {
                         pila.pop();
                         entrada.removeFirst();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    default ->{
-                        aceptar = false;
-                    }                    
+                    default -> {
+                        throw new Exception("cadena no aceptada");
+                    }
                 }
             }
             case "false" -> {
@@ -197,100 +199,101 @@ public class Automata {
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "E'" -> {
-                       aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T" -> {
                         pila.pop();
                         pila.push("T'");
                         pila.push("F");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "T'" -> {
-                         aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "F" -> {
                         pila.pop();
-                        pila.push("false");                   
-                        aceptar = reconocer(entrada);
+                        pila.push("false");
+                        return reconocer(entrada);
                     }
-                    case "false"->{
+                    case "false" -> {
                         pila.pop();
                         entrada.removeFirst();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    default ->{
-                        aceptar = false;
-                    }                    
+                    default -> {
+                        throw new Exception("cadena no aceptada");
+                    }
                 }
             }
-              case "true" -> {
+            case "true" -> {
                 switch (pila.peek()) {
                     case "E" -> {
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "E'" -> {
-                       aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T" -> {
                         pila.pop();
                         pila.push("T'");
                         pila.push("F");
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "T'" -> {
-                         aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "F" -> {
                         pila.pop();
-                        pila.push("true");                   
-                        aceptar = reconocer(entrada);
+                        pila.push("true");
+                        return reconocer(entrada);
                     }
-                    case "true"->{
+                    case "true" -> {
                         pila.pop();
                         entrada.removeFirst();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
-                    default ->{
-                        aceptar = false;
-                    }                    
+                    default -> {
+                        throw new Exception("cadena no aceptada");
+                    }
                 }
             }
             case "$" -> {
                 switch (pila.peek()) {
                     case "E" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "E'" -> {
-                       pila.pop();
-                       aceptar = reconocer(entrada);
+                        pila.pop();
+                        return reconocer(entrada);
                     }
                     case "T" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
                     case "T'" -> {
                         pila.pop();
-                        aceptar = reconocer(entrada);
+                        return reconocer(entrada);
                     }
                     case "F" -> {
-                        aceptar = false;
+                        throw new Exception("cadena no aceptada");
                     }
-                    case "$"->{
+                    case "$" -> {
                         return true;
                     }
-                    default ->{
-                        aceptar = false;
-                    }                    
+                    default -> {
+                        throw new Exception("cadena no aceptada");
+                    }
                 }
             }
+            default -> {
+                throw new Exception("cadena no aceptada");
+            }
         }
-
-        return aceptar;
     }
 
 }

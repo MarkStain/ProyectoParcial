@@ -5,6 +5,8 @@
 package automatapila;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,7 +21,7 @@ public class AutomataPila {
         
         LinkedList<Simbolo> simbolos = new LinkedList<>();
         Simbolo s = new Simbolo();
-        s.token = "false";
+        s.token = "true";
         s.lexema = "5";
         simbolos.add(s);
         s = new Simbolo();
@@ -27,7 +29,7 @@ public class AutomataPila {
         s.lexema = "+";
         simbolos.add(s);
         s = new Simbolo();
-        s.token = "true";
+        s.token = "false";
         s.lexema = "var";
         simbolos.add(s);
         s = new Simbolo();
@@ -48,7 +50,11 @@ public class AutomataPila {
         System.out.println("");
         
         Automata a = new Automata();
-        System.out.println("La cadena es aceptada: "+a.parsear(simbolos));
+        try {
+            System.out.println("La cadena es aceptada: "+a.parsear(simbolos));
+        } catch (Exception ex) {
+            System.out.println("cadena no aceptada");
+        }
         
         System.out.println(a.pila);
         
