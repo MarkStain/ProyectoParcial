@@ -4,57 +4,59 @@
  */
 package automatapila;
 
+import automatapila.model.*;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 /**
- *
  * @author Carlos
  */
 public class Automata {
 
+    List<String> ejecutor = new ArrayList<>();
+    Operacion mainOperacion = null;
+    Operacion actualOperacion = null;
     Stack<String> pila = new Stack<>();
+    boolean izquierda = true;
     boolean resultado = false;
+    Expresion izq;
 
     public boolean parsear(LinkedList<Simbolo> entrada) throws Exception {
-
+        izquierda = true;
         pila.push("$");
         pila.push("E");
-        return reconocer(entrada);
-
+        reconocer(entrada);
+        System.out.println(mainOperacion);
+        System.out.println(mainOperacion.ejecutar());
+        return true;
     }
 
-    private boolean reconocer(LinkedList<Simbolo> entrada) throws Exception {
-        //entrada.stream().forEach(item-> System.out.println(item)
-        System.out.println(pila.peek());
-                
+    private void reconocer(LinkedList<Simbolo> entrada) throws Exception {
         switch (entrada.getFirst().token) {
             case "|" -> {
                 switch (pila.peek()) {
-                    case "E" -> {
-                        throw new Exception("cadena no aceptada");
-                    }
                     case "E'" -> {
+                        System.out.println("| -> Ep");
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
                         pila.push("|");
-                        return reconocer(entrada);
-                    }
-                    case "T" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "T'" -> {
+                        System.out.println("| -> Tp");
                         pila.pop();
-                        return reconocer(entrada);
-                    }
-                    case "F" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "|" -> {
+                        System.out.println("| -> |");
+                        addOperacion(new Operacion(izq, null, OperacionType.OR));
                         pila.pop();
                         entrada.removeFirst();
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -63,28 +65,19 @@ public class Automata {
             }
             case "&" -> {
                 switch (pila.peek()) {
-                    case "E" -> {
-                        throw new Exception("cadena no aceptada");
-                    }
-                    case "E'" -> {
-                        throw new Exception("cadena no aceptada");
-                    }
-                    case "T" -> {
-                        throw new Exception("cadena no aceptada");
-                    }
                     case "T'" -> {
+                        System.out.println("& -> Tp");
                         pila.pop();
                         pila.push("F");
                         pila.push("&");
-                        return reconocer(entrada);
-                    }
-                    case "F" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "&" -> {
+                        addOperacion(new Operacion(izq, null, OperacionType.AND));
+                        System.out.println("& -> &");
                         pila.pop();
                         entrada.removeFirst();
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -94,33 +87,31 @@ public class Automata {
             case "!" -> {
                 switch (pila.peek()) {
                     case "E" -> {
+                        System.out.println("! -> E");
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
-                        return reconocer(entrada);
-                    }
-                    case "E'" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "T" -> {
+                        System.out.println("! -> T");
                         pila.pop();
                         pila.push("T'");
                         pila.push("F");
-                        return reconocer(entrada);
-                    }
-                    case "T'" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "F" -> {
+                        System.out.println("! -> F");
                         pila.pop();
                         pila.push("F");
                         pila.push("!");
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     case "!" -> {
+                        System.out.println("! -> !");
                         pila.pop();
                         entrada.removeFirst();
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -130,34 +121,32 @@ public class Automata {
             case "(" -> {
                 switch (pila.peek()) {
                     case "E" -> {
+                        System.out.println("( -> E");
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
-                        return reconocer(entrada);
-                    }
-                    case "E'" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "T" -> {
+                        System.out.println("( -> T");
                         pila.pop();
                         pila.push("T'");
                         pila.push("F");
-                        return reconocer(entrada);
-                    }
-                    case "T'" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "F" -> {
+                        System.out.println("( -> F");
                         pila.pop();
                         pila.push(")");
                         pila.push("E");
                         pila.push("(");
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     case "(" -> {
+                        System.out.println("( -> (");
                         pila.pop();
                         entrada.removeFirst();
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -166,27 +155,16 @@ public class Automata {
             }
             case ")" -> {
                 switch (pila.peek()) {
-                    case "E" -> {
-                        throw new Exception("cadena no aceptada");
-                    }
-                    case "E'" -> {
+                    case "E'", "T'" -> {
+                        System.out.println(") -> Ep, Tp");
                         pila.pop();
-                        return reconocer(entrada);
-                    }
-                    case "T" -> {
-                        throw new Exception("cadena no aceptada");
-                    }
-                    case "T'" -> {
-                        pila.pop();
-                        return reconocer(entrada);
-                    }
-                    case "F" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case ")" -> {
+                        System.out.println(") -> )");
                         pila.pop();
                         entrada.removeFirst();
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -196,32 +174,31 @@ public class Automata {
             case "false" -> {
                 switch (pila.peek()) {
                     case "E" -> {
+                        System.out.println("false -> E");
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
-                        return reconocer(entrada);
-                    }
-                    case "E'" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "T" -> {
+                        System.out.println("false -> T");
                         pila.pop();
                         pila.push("T'");
                         pila.push("F");
-                        return reconocer(entrada);
-                    }
-                    case "T'" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "F" -> {
+                        System.out.println("false -> F");
                         pila.pop();
                         pila.push("false");
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     case "false" -> {
+                        System.out.println("false -> False");
+                        asignar(new Literal(pila.peek()));
                         pila.pop();
                         entrada.removeFirst();
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -231,32 +208,31 @@ public class Automata {
             case "true" -> {
                 switch (pila.peek()) {
                     case "E" -> {
+                        System.out.println("true -> E");
                         pila.pop();
                         pila.push("E'");
                         pila.push("T");
-                        return reconocer(entrada);
-                    }
-                    case "E'" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "T" -> {
+                        System.out.println("true -> T");
                         pila.pop();
                         pila.push("T'");
                         pila.push("F");
-                        return reconocer(entrada);
-                    }
-                    case "T'" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "F" -> {
+                        System.out.println("true -> F");
                         pila.pop();
                         pila.push("true");
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     case "true" -> {
+                        System.out.println("true -> True");
+                        asignar(new Literal(pila.peek()));
                         pila.pop();
                         entrada.removeFirst();
-                        return reconocer(entrada);
+                        reconocer(entrada);
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -265,25 +241,13 @@ public class Automata {
             }
             case "$" -> {
                 switch (pila.peek()) {
-                    case "E" -> {
-                        throw new Exception("cadena no aceptada");
-                    }
-                    case "E'" -> {
+                    case "E'", "T'" -> {
                         pila.pop();
-                        return reconocer(entrada);
-                    }
-                    case "T" -> {
-                        throw new Exception("cadena no aceptada");
-                    }
-                    case "T'" -> {
-                        pila.pop();
-                        return reconocer(entrada);
-                    }
-                    case "F" -> {
-                        throw new Exception("cadena no aceptada");
+                        reconocer(entrada);
                     }
                     case "$" -> {
-                        return true;
+                        System.out.println("Fin de cadena");
+                        ;
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -292,6 +256,30 @@ public class Automata {
             }
             default -> {
                 throw new Exception("cadena no aceptada");
+            }
+        }
+    }
+
+    private void asignar(Expresion valor) {
+        if (izquierda) {
+            izq = valor;
+        } else if (actualOperacion.getDer() == null) {
+            actualOperacion.setDer(valor);
+        }
+        izquierda = !izquierda;
+    }
+
+    private void addOperacion(Operacion op) {
+        System.out.println("Add operacion");
+        izq = null;
+        actualOperacion = op;
+        if (mainOperacion == null) {
+            mainOperacion = op;
+        } else {
+            if (mainOperacion.getIzq() == null) {
+                mainOperacion.setIzq(op);
+            } else {
+                mainOperacion.setDer(op);
             }
         }
     }
