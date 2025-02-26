@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * @author Carlos
+ * @author
  */
 public class Automata {
 
@@ -30,8 +30,8 @@ public class Automata {
         pila.push("$");
         pila.push("E");
         reconocer(entrada);
-        System.out.println(mainOperacion);
-        System.out.println(mainOperacion.ejecutar());
+        System.out.println(actualOperacion);
+        System.out.println(actualOperacion.ejecutar());
         return true;
     }
 
@@ -69,6 +69,7 @@ public class Automata {
                     case "T'" -> {
                         System.out.println("& -> Tp");
                         pila.pop();
+                        pila.push("T'");
                         pila.push("F");
                         pila.push("&");
                         reconocer(entrada);
@@ -248,7 +249,6 @@ public class Automata {
                     }
                     case "$" -> {
                         System.out.println("Fin de cadena");
-                        ;
                     }
                     default -> {
                         throw new Exception("cadena no aceptada");
@@ -262,6 +262,7 @@ public class Automata {
     }
 
     private void asignar(Expresion valor) {
+        System.out.println(valor);
         if (actualOperacion == null) {
             actualOperacion = new Operacion();
         }
@@ -273,19 +274,14 @@ public class Automata {
     }
 
     private void addOperacion(OperacionType op) {
-        System.out.println("Add operacion");
-        actualOperacion.setType(op);
-        if (mainOperacion == null) {
-            mainOperacion = cursorOperacion = actualOperacion;
-        } else {
-            if (cursorOperacion.getIzq() == null) {
-                cursorOperacion.setIzq(actualOperacion);
-            } else {
-                cursorOperacion.setDer(actualOperacion);
-                cursorOperacion = actualOperacion;
-                actualOperacion = null;
-            }
+        System.out.println(op.name());
+        if (actualOperacion.getIzq() != null && actualOperacion.getDer() != null) {
+            Operacion newOperacion = new Operacion();
+            newOperacion.setIzq(actualOperacion);
+            actualOperacion = newOperacion;
         }
+        actualOperacion.setType(op);
     }
-
 }
+
+
