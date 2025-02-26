@@ -20,11 +20,11 @@ public class AutomataPila {
 
         LinkedList<Simbolo> simbolos = new LinkedList<>();
         Simbolo s = new Simbolo();
-        s.token = "true";
+        s.token = "false";
         s.lexema = "5";
         simbolos.add(s);
         s = new Simbolo();
-        s.token = "&";
+        s.token = "|";
         s.lexema = "+";
         simbolos.add(s);
         s = new Simbolo();
@@ -52,7 +52,7 @@ public class AutomataPila {
         try {
             System.out.println("La cadena es aceptada: " + a.parsear(simbolos));
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            System.out.println(ex);
             System.out.println("cadena no aceptada");
         }
 

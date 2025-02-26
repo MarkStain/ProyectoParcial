@@ -19,6 +19,7 @@ public class Automata {
     List<String> ejecutor = new ArrayList<>();
     Operacion mainOperacion = null;
     Operacion actualOperacion = null;
+    Operacion cursorOperacion = null;
     Stack<String> pila = new Stack<>();
     boolean izquierda = true;
     boolean resultado = false;
@@ -53,7 +54,7 @@ public class Automata {
                     }
                     case "|" -> {
                         System.out.println("| -> |");
-                        addOperacion(new Operacion(izq, null, OperacionType.OR));
+                        addOperacion(OperacionType.OR);
                         pila.pop();
                         entrada.removeFirst();
                         reconocer(entrada);
@@ -73,7 +74,7 @@ public class Automata {
                         reconocer(entrada);
                     }
                     case "&" -> {
-                        addOperacion(new Operacion(izq, null, OperacionType.AND));
+                        addOperacion(OperacionType.AND);
                         System.out.println("& -> &");
                         pila.pop();
                         entrada.removeFirst();
@@ -261,25 +262,28 @@ public class Automata {
     }
 
     private void asignar(Expresion valor) {
-        if (izquierda) {
-            izq = valor;
+        if (actualOperacion == null) {
+            actualOperacion = new Operacion();
+        }
+        if (actualOperacion.getIzq() == null) {
+            actualOperacion.setIzq(valor);
         } else if (actualOperacion.getDer() == null) {
             actualOperacion.setDer(valor);
         }
-        izquierda = !izquierda;
     }
 
-    private void addOperacion(Operacion op) {
+    private void addOperacion(OperacionType op) {
         System.out.println("Add operacion");
-        izq = null;
-        actualOperacion = op;
+        actualOperacion.setType(op);
         if (mainOperacion == null) {
-            mainOperacion = op;
+            mainOperacion = cursorOperacion = actualOperacion;
         } else {
-            if (mainOperacion.getIzq() == null) {
-                mainOperacion.setIzq(op);
+            if (cursorOperacion.getIzq() == null) {
+                cursorOperacion.setIzq(actualOperacion);
             } else {
-                mainOperacion.setDer(op);
+                cursorOperacion.setDer(actualOperacion);
+                cursorOperacion = actualOperacion;
+                actualOperacion = null;
             }
         }
     }
