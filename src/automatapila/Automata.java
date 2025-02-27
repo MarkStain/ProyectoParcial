@@ -18,7 +18,6 @@ public class Automata {
     Operacion actualOperacion = null;
     Operacion temporalOperacion = null;
     Stack<String> pila = new Stack<>();
-    Stack<Operacion> operacionStack = new Stack<>();
     Stack<Operacion> prioridadStack = new Stack<>();
 
     public boolean parsear(LinkedList<Simbolo> entrada) throws Exception {
@@ -271,6 +270,9 @@ public class Automata {
             } else if (anterior.getDer() == null) {
                 anterior.setDer(actualOperacion);
                 actualOperacion = anterior;
+                if (!actualOperacion.getOperacionStack().isEmpty()) {
+                    actualOperacion = actualOperacion.getOperacionStack().pop();
+                }
             }
         } else {
             prioridadStack.push(actualOperacion);
@@ -295,7 +297,7 @@ public class Automata {
             newOperacion.setType(op);
             if (actualOperacion.getType() != null) {
                 addSetDer(newOperacion);
-                operacionStack.push(actualOperacion);
+                newOperacion.getOperacionStack().push(actualOperacion);
             }
             actualOperacion = newOperacion;
         } else if (actualOperacion.getIzq() != null && actualOperacion.getDer() != null) {
@@ -309,8 +311,8 @@ public class Automata {
 
     private void addSetDer(Expresion expresion) {
         actualOperacion.setDer(expresion);
-        if (!operacionStack.isEmpty()) {
-            actualOperacion = operacionStack.pop();
+        if (!actualOperacion.getOperacionStack().isEmpty()) {
+            actualOperacion = actualOperacion.getOperacionStack().pop();
         }
     }
 }

@@ -48,6 +48,10 @@ public class AutomataPila {
         s.lexema = "+";
         simbolos.add(s);
         s = new Simbolo();
+        s.token = "!";
+        s.lexema = "+";
+        simbolos.add(s);
+        s = new Simbolo();
         s.token = "(";
         s.lexema = "5";
         simbolos.add(s);
