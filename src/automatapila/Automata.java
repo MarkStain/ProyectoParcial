@@ -6,9 +6,7 @@ package automatapila;
 
 import automatapila.model.*;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -16,17 +14,14 @@ import java.util.Stack;
  */
 public class Automata {
 
-    List<String> ejecutor = new ArrayList<>();
-    Operacion mainOperacion = null;
+
     Operacion actualOperacion = null;
-    Operacion cursorOperacion = null;
+    Operacion temporalOperacion = null;
     Stack<String> pila = new Stack<>();
-    boolean izquierda = true;
-    boolean resultado = false;
-    Expresion izq;
+    Stack<Operacion> operacionStack = new Stack<>();
 
     public boolean parsear(LinkedList<Simbolo> entrada) throws Exception {
-        izquierda = true;
+        actualOperacion = new Operacion();
         pila.push("$");
         pila.push("E");
         reconocer(entrada);
@@ -111,6 +106,7 @@ public class Automata {
                     }
                     case "!" -> {
                         System.out.println("! -> !");
+                        addOperacion(OperacionType.NOT);
                         pila.pop();
                         entrada.removeFirst();
                         reconocer(entrada);
@@ -263,24 +259,36 @@ public class Automata {
 
     private void asignar(Expresion valor) {
         System.out.println(valor);
-        if (actualOperacion == null) {
-            actualOperacion = new Operacion();
-        }
         if (actualOperacion.getIzq() == null) {
             actualOperacion.setIzq(valor);
         } else if (actualOperacion.getDer() == null) {
-            actualOperacion.setDer(valor);
+            addSetDer(valor);
         }
     }
 
     private void addOperacion(OperacionType op) {
         System.out.println(op.name());
-        if (actualOperacion.getIzq() != null && actualOperacion.getDer() != null) {
-            Operacion newOperacion = new Operacion();
+        Operacion newOperacion = new Operacion();
+        if (op == OperacionType.NOT) {
+            newOperacion.setIzq(new Empty());
+            newOperacion.setType(op);
+            if (actualOperacion.getType() != null) {
+                addSetDer(newOperacion);
+                operacionStack.push(actualOperacion);
+            }
+            actualOperacion = newOperacion;
+        } else if (actualOperacion.getIzq() != null && actualOperacion.getDer() != null) {
             newOperacion.setIzq(actualOperacion);
             actualOperacion = newOperacion;
+            actualOperacion.setType(op);
         }
-        actualOperacion.setType(op);
+    }
+
+    private void addSetDer(Expresion expresion) {
+        actualOperacion.setDer(expresion);
+        if (!operacionStack.isEmpty()) {
+            actualOperacion = operacionStack.pop();
+        }
     }
 }
 
