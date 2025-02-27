@@ -1,11 +1,14 @@
 package automatapila.model;
 
+import java.util.Stack;
+
 public class Operacion implements Expresion {
 
     Expresion izq;
     Expresion der;
     OperacionType type;
     final String tipo = "Operacion";
+    Stack<Operacion> operacionStack = new Stack<>();
 
     public Operacion() {
     }
@@ -42,6 +45,14 @@ public class Operacion implements Expresion {
 
     public String getTipo() {
         return tipo;
+    }
+
+    public Stack<Operacion> getOperacionStack() {
+        return operacionStack;
+    }
+
+    public void setOperacionStack(Stack<Operacion> operacionStack) {
+        this.operacionStack = operacionStack;
     }
 
     @Override

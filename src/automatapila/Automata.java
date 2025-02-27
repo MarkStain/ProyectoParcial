@@ -19,6 +19,7 @@ public class Automata {
     Operacion temporalOperacion = null;
     Stack<String> pila = new Stack<>();
     Stack<Operacion> operacionStack = new Stack<>();
+    Stack<Operacion> prioridadStack = new Stack<>();
 
     public boolean parsear(LinkedList<Simbolo> entrada) throws Exception {
         actualOperacion = new Operacion();
@@ -142,6 +143,7 @@ public class Automata {
                     }
                     case "(" -> {
                         System.out.println("( -> (");
+                        manejarPrioridad(false);
                         pila.pop();
                         entrada.removeFirst();
                         reconocer(entrada);
@@ -160,6 +162,7 @@ public class Automata {
                     }
                     case ")" -> {
                         System.out.println(") -> )");
+                        manejarPrioridad(true);
                         pila.pop();
                         entrada.removeFirst();
                         reconocer(entrada);
@@ -257,6 +260,24 @@ public class Automata {
         }
     }
 
+    private void manejarPrioridad(boolean cierre) {
+        if (cierre) {
+            Operacion anterior = prioridadStack.pop();
+            if (anterior.getIzq() == null && anterior.getDer() == null) {
+                actualOperacion = actualOperacion;
+            } else if (anterior.getIzq() == null) {
+                anterior.setIzq(actualOperacion);
+                actualOperacion = anterior;
+            } else if (anterior.getDer() == null) {
+                anterior.setDer(actualOperacion);
+                actualOperacion = anterior;
+            }
+        } else {
+            prioridadStack.push(actualOperacion);
+            actualOperacion = new Operacion();
+        }
+    }
+
     private void asignar(Expresion valor) {
         System.out.println(valor);
         if (actualOperacion.getIzq() == null) {
@@ -280,6 +301,8 @@ public class Automata {
         } else if (actualOperacion.getIzq() != null && actualOperacion.getDer() != null) {
             newOperacion.setIzq(actualOperacion);
             actualOperacion = newOperacion;
+            actualOperacion.setType(op);
+        } else {
             actualOperacion.setType(op);
         }
     }
