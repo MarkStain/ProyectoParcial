@@ -7,9 +7,10 @@ package automatapila;
 import automatapila.model.Simbolo;
 
 import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
- * @author Carlos
+ * @author
  */
 public class AutomataPila {
 
@@ -19,85 +20,34 @@ public class AutomataPila {
     public static void main(String[] args) {
 
         LinkedList<Simbolo> simbolos = new LinkedList<>();
-        Simbolo s = new Simbolo();
-        s.token = "(";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "false";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "|";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "true";
-        s.lexema = "+";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = ")";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "&";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "!";
-        s.lexema = "+";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "!";
-        s.lexema = "+";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "(";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "true";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "|";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "true";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = ")";
-        s.lexema = "5";
-        simbolos.add(s);
-        s = new Simbolo();
-        s.token = "$";
-        s.lexema = "$";
-        simbolos.add(s);
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("La entrada es (lexemas):");
-        for (Simbolo e : simbolos) {
-            System.out.print(e.lexema);
+        System.out.print("Ingrese la cadena de tokens separados por espacio: ");
+        String entrada = scanner.nextLine().trim();
+        scanner.close();
+
+        String[] tokens = entrada.split("\\s+");
+
+        for (String token : tokens) {
+            Simbolo s = new Simbolo();
+            s.token = token;
+            simbolos.add(s);
         }
 
-        System.out.println("");
-        System.out.println("La entrada es (token):");
+        System.out.println("\nLa entrada es (tokens):");
         for (Simbolo e : simbolos) {
-            System.out.print(e.token);
+            System.out.print(e.token + " ");
         }
-        System.out.println("");
+        System.out.println("\n");
 
         Automata a = new Automata();
         try {
             System.out.println("La cadena es aceptada: " + a.parsear(simbolos));
         } catch (Exception ex) {
             System.out.println(ex);
-            System.out.println("cadena no aceptada");
+            System.out.println("Cadena no aceptada");
         }
 
         System.out.println(a.pila);
-
     }
-
 }

@@ -16,7 +16,6 @@ public class Automata {
 
 
     Operacion actualOperacion = null;
-    Operacion temporalOperacion = null;
     Stack<String> pila = new Stack<>();
     Stack<Operacion> prioridadStack = new Stack<>();
 

@@ -6,7 +6,7 @@ package automatapila.model;
 
 /**
  *
- * @author Carlos
+ * @author
  */
 public class Simbolo {
     
